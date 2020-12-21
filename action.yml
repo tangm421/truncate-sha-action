@@ -1,0 +1,33 @@
+name: 'SHA Truncator'
+description: 'Truncate commit SHA to the specified field width'
+inputs:
+  sha:
+    description: 'sha of commit'
+    required: false
+    default: ${{ github.sha }}
+  field-width:
+    description: 'specified field width of truncation'
+    required: false
+    default: 7
+outputs:
+  sha-origin:
+    description: "original sha"
+    value: ${{ steps.truncate.outputs.sha_origin }}
+  sha-width: 
+    description: "truncated field width"
+    value: ${{ steps.truncate.outputs.sha_width }}
+  sha-short: 
+    description: "truncated short sha"
+    value: ${{ steps.truncate.outputs.sha_short }}
+runs:
+  using: "composite"
+  steps:
+    - id: truncate
+      env:
+        INPUT_SHA: ${{ inputs.sha }}
+        INPUT_WIDTH: ${{ inputs.field-width }}
+      run: |
+        echo "::set-output name=sha_origin::$INPUT_SHA"
+        echo "::set-output name=sha_width::$INPUT_WIDTH"
+        echo "::set-output name=sha_short::${INPUT_SHA::$INPUT_WIDTH}"
+      shell: bash
